@@ -1,0 +1,691 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>✨ TIME CAPSULE ✨ :: our lil corner of the net</title>
+<meta name="description" content="A Y2K digital scrapbook — photos, memories & a look back at this day in years past." />
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>💾</text></svg>" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=VT323&family=Comic+Neue:wght@400;700&display=swap" rel="stylesheet" />
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<style>
+:root{
+  --silver:#c3c7cb; --silver-lt:#ffffff; --silver-dk:#7b7d80; --silver-dkr:#3a3a3a;
+  --hot:#ff2d9b; --hot-lt:#ff8fd6; --cyan:#23e7ff; --cyan-dk:#00a6c4;
+  --purple:#a64dff; --lime:#c6ff2e; --yellow:#ffe24d; --teal:#13c6b3;
+  --titlebar1:#13007c; --titlebar2:#2f8fe6; --ink:#13003a; --link:#1010ee; --linkv:#7a18c4;
+  --pixel:'Press Start 2P', system-ui, sans-serif;
+  --mono:'VT323', monospace; --body:'Comic Neue','Comic Sans MS','Comic Sans', cursive, sans-serif;
+}
+*{box-sizing:border-box}
+html,body{margin:0;padding:0}
+body{
+  font-family:var(--body);
+  color:var(--ink);
+  font-size:18px;
+  line-height:1.45;
+  background-color:#1a0140;
+  background-image:
+    radial-gradient(circle at 12% 18%, rgba(255,45,155,.35), transparent 40%),
+    radial-gradient(circle at 88% 12%, rgba(35,231,255,.30), transparent 42%),
+    radial-gradient(circle at 75% 88%, rgba(166,77,255,.40), transparent 45%),
+    radial-gradient(circle at 25% 85%, rgba(19,198,179,.30), transparent 45%),
+    linear-gradient(165deg,#2b0a64 0%, #160a52 45%, #0a0a4a 100%);
+  background-attachment:fixed;
+  cursor:url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' width='28' height='28' viewBox='0 0 28 28'><text y='22' font-size='22'>✨</text></svg>") 4 4, auto;
+  overflow-x:hidden;
+}
+/* twinkling star overlay */
+body::before{
+  content:"";position:fixed;inset:0;z-index:0;pointer-events:none;opacity:.55;
+  background-image:
+    radial-gradient(1.5px 1.5px at 20px 30px,#fff,transparent),
+    radial-gradient(1.5px 1.5px at 120px 80px,#fff,transparent),
+    radial-gradient(1px 1px at 200px 40px,#cfefff,transparent),
+    radial-gradient(2px 2px at 300px 150px,#fff,transparent),
+    radial-gradient(1px 1px at 80px 200px,#ffe,transparent),
+    radial-gradient(1.5px 1.5px at 350px 260px,#fff,transparent);
+  background-size:380px 300px;
+  animation:twinkle 4s steps(2) infinite;
+}
+@keyframes twinkle{0%,100%{opacity:.55}50%{opacity:.25}}
+.wrap{position:relative;z-index:1;max-width:980px;margin:0 auto;padding:10px 12px 60px}
+
+/* ---- generic Win9x bevels ---- */
+.bevel{background:var(--silver);border:2px solid;border-color:var(--silver-lt) var(--silver-dk) var(--silver-dk) var(--silver-lt);box-shadow:1px 1px 0 var(--silver-dkr)}
+.inset{border-color:var(--silver-dk) var(--silver-lt) var(--silver-lt) var(--silver-dk)}
+.panel{margin:16px 0;padding:0;background:var(--silver);border:2px solid;border-color:var(--silver-lt) var(--silver-dk) var(--silver-dk) var(--silver-lt);box-shadow:3px 3px 0 rgba(0,0,0,.45)}
+.titlebar{display:flex;align-items:center;justify-content:space-between;gap:8px;padding:5px 8px;background:linear-gradient(90deg,var(--titlebar1),var(--titlebar2));color:#fff;font-weight:700;letter-spacing:.5px;text-shadow:1px 1px 0 #000}
+.titlebar .tb-title{font-family:var(--body);font-size:16px;display:flex;align-items:center;gap:7px}
+.titlebar .tb-btns{display:flex;gap:4px}
+.titlebar .tb-btns span{display:inline-grid;place-items:center;width:18px;height:16px;font-size:11px;font-weight:700;color:#000;background:var(--silver);border:2px solid;border-color:var(--silver-lt) var(--silver-dk) var(--silver-dk) var(--silver-lt)}
+.panel-body{padding:14px}
+
+/* buttons */
+button,.btn{font-family:var(--body);font-size:16px;font-weight:700;color:#111;background:var(--silver);border:2px solid;border-color:var(--silver-lt) var(--silver-dk) var(--silver-dk) var(--silver-lt);padding:6px 14px;cursor:pointer;box-shadow:1px 1px 0 var(--silver-dkr);white-space:nowrap}
+button:hover,.btn:hover{background:#d4d8dc}
+button:active,.btn:active{border-color:var(--silver-dk) var(--silver-lt) var(--silver-lt) var(--silver-dk);box-shadow:none;transform:translate(1px,1px)}
+button.primary{background:linear-gradient(180deg,#ff63b8,#ff2d9b);color:#fff;text-shadow:1px 1px 0 #8a0050;border-color:#ffd0ec #b3005f #b3005f #ffd0ec}
+button.primary:hover{background:linear-gradient(180deg,#ff7ec6,#ff3ea4)}
+button.cyan{background:linear-gradient(180deg,#7af3ff,#23e7ff);color:#063;text-shadow:1px 1px 0 #bff;border-color:#d4fbff #0093ad #0093ad #d4fbff}
+input,textarea,select{font-family:var(--body);font-size:16px;padding:6px 8px;background:#fff;border:2px solid;border-color:var(--silver-dk) var(--silver-lt) var(--silver-lt) var(--silver-dk);color:#111;width:100%}
+textarea{resize:vertical;min-height:90px}
+label{font-weight:700;display:block;margin:0 0 3px}
+a{color:var(--link)}a:visited{color:var(--linkv)}
+
+/* ---- top marquee ---- */
+.topbar{margin:4px 0 10px;border:2px solid;border-color:var(--lime) #2b6b00 #2b6b00 var(--lime);background:#000;overflow:hidden}
+.marquee{display:flex;white-space:nowrap;color:var(--lime);font-family:var(--mono);font-size:24px;letter-spacing:1px;will-change:transform;animation:scroll-l 26s linear infinite}
+.topbar:hover .marquee{animation-play-state:paused}
+.marquee span{padding-right:60px;text-shadow:0 0 6px rgba(198,255,46,.7)}
+@keyframes scroll-l{0%{transform:translateX(0)}100%{transform:translateX(-50%)}}
+
+/* ---- hero ---- */
+.hero{text-align:center;margin:6px 0 4px}
+.logo{font-family:var(--pixel);font-size:clamp(26px,7vw,56px);line-height:1.25;margin:6px 0;
+  background:linear-gradient(90deg,#ff2d9b,#ffe24d,#23e7ff,#a64dff,#ff2d9b);
+  background-size:300% auto;-webkit-background-clip:text;background-clip:text;color:transparent;
+  -webkit-text-stroke:2px #1a0033; filter:drop-shadow(3px 3px 0 #000);
+  animation:hue 8s linear infinite}
+@keyframes hue{to{background-position:300% center}}
+.tagline{font-family:var(--body);color:#fff;font-size:19px;text-shadow:1px 1px 0 #000, 0 0 8px var(--hot);margin:2px 0 12px}
+.tagline b{color:var(--yellow)}
+.blink{animation:blink 1.1s steps(2,start) infinite}@keyframes blink{to{visibility:hidden}}
+
+/* counter + status strip */
+.metastrip{display:flex;flex-wrap:wrap;gap:10px;align-items:center;justify-content:center;margin-bottom:6px}
+.counter{display:inline-flex;align-items:center;gap:8px;background:#000;border:2px solid;border-color:#444 #000 #000 #444;padding:5px 9px}
+.counter .lbl{font-family:var(--body);color:#0f0;font-size:13px;font-weight:700}
+.odometer{display:flex;gap:2px}
+.odometer .d{font-family:var(--mono);font-size:28px;color:#39ff14;background:#0a0a0a;border:1px solid #061;padding:0 4px;min-width:20px;text-align:center;text-shadow:0 0 6px #39ff14}
+.pill{font-family:var(--mono);font-size:18px;color:#001;background:var(--yellow);border:2px solid;border-color:#fff7c2 #a98e00 #a98e00 #fff7c2;padding:2px 10px}
+
+/* ---- controls ---- */
+.controls .panel-body{display:flex;flex-wrap:wrap;gap:10px;align-items:center}
+.controls .grow{flex:1 1 180px}
+.controls .seg{display:flex;align-items:center;gap:6px}
+.controls small{font-weight:700}
+
+/* ---- ON THIS DAY ---- */
+#otd .panel-body{background:repeating-linear-gradient(45deg,#fff 0 14px,#fff7fb 14px 28px)}
+.otd-head{font-family:var(--pixel);font-size:14px;color:var(--hot);margin:0 0 10px;text-shadow:1px 1px 0 #ffd9ef}
+.otd-empty{font-family:var(--body);font-size:18px;color:#553}
+.otd-card{display:flex;gap:12px;align-items:flex-start;background:#fff;border:2px solid;border-color:var(--silver-dk) var(--silver-lt) var(--silver-lt) var(--silver-dk);padding:10px;margin:8px 0}
+.otd-years{flex:0 0 auto;font-family:var(--pixel);font-size:11px;color:#fff;background:linear-gradient(180deg,#a64dff,#6a1fb0);padding:8px;text-align:center;text-shadow:1px 1px 0 #2a0050;border:2px solid #d9b3ff;min-width:74px}
+.otd-years b{display:block;font-size:20px;margin-bottom:2px}
+.otd-body h4{margin:0 0 3px;font-family:var(--body);font-size:19px}
+.otd-body .mini{font-size:14px;color:#666}
+.otd-thumbs{display:flex;gap:5px;margin-top:6px;flex-wrap:wrap}
+.otd-thumbs img{width:52px;height:52px;object-fit:cover;border:2px solid #fff;box-shadow:1px 1px 0 #999;cursor:pointer}
+
+/* ---- entry form ---- */
+#formPanel{display:none}
+.form-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.form-grid .full{grid-column:1 / -1}
+.moodpick{display:flex;flex-wrap:wrap;gap:5px}
+.moodpick .m{font-size:22px;line-height:1;padding:4px 6px;background:#fff;border:2px solid;border-color:var(--silver-lt) var(--silver-dk) var(--silver-dk) var(--silver-lt);cursor:pointer}
+.moodpick .m.sel{background:var(--yellow);border-color:#a98e00 #fff7c2 #fff7c2 #a98e00;box-shadow:inset 1px 1px 3px #806b00}
+.thumbrow{display:flex;flex-wrap:wrap;gap:8px;margin-top:8px}
+.thumb{position:relative;width:84px;height:84px}
+.thumb img{width:84px;height:84px;object-fit:cover;border:2px solid #fff;box-shadow:1px 1px 0 #888}
+.thumb .x{position:absolute;top:-8px;right:-8px;width:22px;height:22px;border-radius:50%;background:#ff2d9b;color:#fff;border:2px solid #fff;font-size:12px;line-height:1;cursor:pointer;display:grid;place-items:center;padding:0}
+.hint{font-size:13px;color:#445;font-weight:400}
+
+/* ---- feed ---- */
+.feedhead{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;margin:18px 0 4px}
+.feedhead h2{font-family:var(--pixel);font-size:16px;color:var(--cyan);text-shadow:2px 2px 0 #003,0 0 10px rgba(35,231,255,.6);margin:0}
+.entry{margin:14px 0}
+.entry .titlebar .date{font-family:var(--mono);font-size:18px;background:#000;color:var(--lime);padding:0 7px;border:1px solid #061}
+.ebody{padding:12px 14px}
+.emeta{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:6px}
+.etitle{font-family:var(--body);font-weight:700;font-size:22px;margin:0;color:#1a0033}
+.byline{font-size:14px;color:#555}
+.byline b{color:#a01070}
+.mood-badge{font-size:22px}
+.etext{white-space:pre-wrap;margin:6px 0 10px;font-size:18px}
+.gallery{display:flex;flex-wrap:wrap;gap:8px;margin:8px 0}
+.gallery img{height:128px;max-width:100%;object-fit:cover;border:3px solid #fff;box-shadow:2px 2px 0 #888;cursor:pointer;background:#eee}
+.tags{display:flex;flex-wrap:wrap;gap:6px;margin:8px 0}
+.tag{font-size:13px;font-weight:700;color:#23005a;background:var(--cyan);border:2px solid;border-color:#d4fbff #0093ad #0093ad #d4fbff;padding:1px 9px;cursor:pointer;border-radius:10px}
+.reactbar{display:flex;flex-wrap:wrap;gap:6px;align-items:center;margin-top:8px;padding-top:8px;border-top:1px dashed #999}
+.react{font-family:var(--body);font-size:16px;font-weight:700;padding:3px 9px;background:#fff;border:2px solid;border-color:var(--silver-lt) var(--silver-dk) var(--silver-dk) var(--silver-lt);cursor:pointer}
+.react:hover{background:var(--hot-lt)}
+.react .c{color:#a01070;margin-left:3px}
+.owner-actions{margin-left:auto;display:flex;gap:6px}
+.owner-actions button{font-size:13px;padding:3px 9px}
+.owner-only{display:none}
+body.owner .owner-only{display:flex}
+
+/* ---- guestbook ---- */
+.gb-entry{background:#fff;border:2px solid;border-color:var(--silver-dk) var(--silver-lt) var(--silver-lt) var(--silver-dk);padding:8px 10px;margin:8px 0}
+.gb-entry .gb-who{font-weight:700;color:#0a7}
+.gb-entry .gb-when{font-size:12px;color:#888;float:right}
+.gb-form{display:grid;grid-template-columns:1fr;gap:8px;margin-top:6px}
+
+/* lightbox */
+#lightbox{display:none;position:fixed;inset:0;z-index:99;background:rgba(8,0,30,.92);align-items:center;justify-content:center;flex-direction:column;cursor:zoom-out}
+#lightbox img{max-width:92vw;max-height:84vh;border:5px solid #fff;box-shadow:0 0 30px var(--cyan)}
+#lightbox .cap{color:#fff;font-family:var(--mono);font-size:22px;margin-top:10px;text-shadow:0 0 8px var(--hot)}
+
+/* toast */
+#toast{position:fixed;left:50%;bottom:22px;transform:translateX(-50%) translateY(120px);z-index:120;background:#000;color:var(--lime);border:2px solid var(--lime);font-family:var(--mono);font-size:20px;padding:8px 18px;transition:transform .25s;box-shadow:0 0 18px rgba(198,255,46,.5);max-width:90vw}
+#toast.show{transform:translateX(-50%) translateY(0)}
+#toast.err{color:#ff5b5b;border-color:#ff5b5b;box-shadow:0 0 18px rgba(255,91,91,.5)}
+
+/* construction + footer */
+.construction{height:18px;margin:18px 0 6px;background:repeating-linear-gradient(45deg,#ffd400 0 16px,#000 16px 32px);animation:bp 1s linear infinite;border:2px solid #000}
+@keyframes bp{to{background-position:45px 0}}
+footer{text-align:center;color:#dfe;font-family:var(--body);margin-top:14px;text-shadow:1px 1px 0 #000}
+footer .webring{display:inline-flex;gap:8px;align-items:center;background:rgba(0,0,0,.35);border:1px solid var(--cyan);padding:6px 12px;margin:6px 0;flex-wrap:wrap;justify-content:center}
+footer a{color:var(--cyan)}
+.badges{display:flex;gap:8px;justify-content:center;flex-wrap:wrap;margin:10px 0}
+.badge88{width:88px;height:31px;display:grid;place-items:center;text-align:center;font-size:9px;font-weight:700;font-family:var(--body);color:#fff;border:1px solid #fff;line-height:1.05;text-shadow:1px 1px 0 #000;cursor:default}
+.b1{background:linear-gradient(90deg,#ff2d9b,#a64dff)}.b2{background:linear-gradient(90deg,#0a0,#093)}.b3{background:linear-gradient(90deg,#1010ee,#23e7ff);color:#012}.b4{background:#000;color:var(--lime)}
+.foot-links{font-size:14px;margin-top:8px}
+.sparkle{position:fixed;z-index:90;pointer-events:none;font-size:16px;will-change:transform,opacity}
+
+@media(max-width:640px){
+  .form-grid{grid-template-columns:1fr}
+  body{font-size:17px}
+  .gallery img{height:104px}
+}
+.loading{padding:24px;text-align:center;font-family:var(--mono);font-size:24px;color:#0a7}
+</style>
+</head>
+<body>
+<div class="topbar"><div class="marquee" id="marquee"></div></div>
+
+<div class="wrap">
+
+  <div class="hero">
+    <div class="logo">✶ TIME&nbsp;CAPSULE ✶</div>
+    <div class="tagline">a lil corner of the internet for <b>our memories</b> &middot; est. 2026 <span class="blink">_</span></div>
+    <div class="metastrip">
+      <div class="counter" title="visitors since launch">
+        <span class="lbl">visitors</span>
+        <div class="odometer" id="odometer"><span class="d">0</span><span class="d">0</span><span class="d">0</span><span class="d">0</span><span class="d">0</span><span class="d">0</span></div>
+      </div>
+      <span class="pill" id="datePill">📅 loading…</span>
+      <span class="pill" id="countPill">📓 … memories</span>
+    </div>
+  </div>
+
+  <!-- ON THIS DAY -->
+  <div class="panel" id="otd">
+    <div class="titlebar"><div class="tb-title">🕰️ On This Day — a look back</div><div class="tb-btns"><span>_</span><span>□</span><span>×</span></div></div>
+    <div class="panel-body" id="otdBody"><div class="otd-empty">checking the archives…</div></div>
+  </div>
+
+  <!-- CONTROLS -->
+  <div class="panel controls">
+    <div class="titlebar"><div class="tb-title">🎛️ Controls</div><div class="tb-btns"><span>_</span><span>□</span><span>×</span></div></div>
+    <div class="panel-body">
+      <button class="primary" id="newBtn">＋ New Entry</button>
+      <div class="seg grow"><span>🔍</span><input id="search" class="grow" placeholder="search memories…" /></div>
+      <div class="seg"><small>tag</small><select id="tagFilter"><option value="">all</option></select></div>
+      <div class="seg"><small>who</small><select id="authorFilter"><option value="">everyone</option></select></div>
+      <div class="seg"><small>sort</small><select id="sortSel"><option value="new">newest first</option><option value="old">oldest first</option></select></div>
+      <button id="lockBtn" title="owner tools">🔒 Owner</button>
+    </div>
+  </div>
+
+  <!-- ENTRY FORM -->
+  <div class="panel" id="formPanel">
+    <div class="titlebar"><div class="tb-title" id="formTitle">📝 New Entry</div><div class="tb-btns"><span id="formClose" style="cursor:pointer">×</span></div></div>
+    <div class="panel-body">
+      <div class="form-grid">
+        <div class="full"><label>Title</label><input id="fTitle" maxlength="120" placeholder="e.g. Best ✨ day ✨ ever" /></div>
+        <div><label>Your name</label><input id="fAuthor" maxlength="40" placeholder="who's writing?" /></div>
+        <div><label>Date of memory</label><input id="fDate" type="date" /></div>
+        <div class="full"><label>Mood</label><div class="moodpick" id="moodPick"></div></div>
+        <div class="full"><label>Story</label><textarea id="fBody" placeholder="what happened? how'd it feel?"></textarea></div>
+        <div class="full"><label>Tags <span class="hint">(comma separated — e.g. roadtrip, brewers, summer)</span></label><input id="fTags" placeholder="tag1, tag2, tag3" /></div>
+        <div class="full">
+          <label>Photos <span class="hint">(jpg / png / gif / webp — added straight to the capsule. big pics get shrunk automatically; GIFs stay animated)</span></label>
+          <input id="fPhotos" type="file" accept="image/*" multiple />
+          <div class="thumbrow" id="thumbRow"></div>
+        </div>
+        <div class="full" style="display:flex;gap:10px;align-items:center;flex-wrap:wrap">
+          <button class="primary" id="saveBtn">💾 Save to Capsule</button>
+          <button id="cancelBtn">cancel</button>
+          <span class="hint" id="formStatus"></span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- FEED -->
+  <div class="feedhead"><h2>📚 The Capsule</h2></div>
+  <div id="feed"><div class="loading">📡 loading memories…</div></div>
+
+  <!-- GUESTBOOK -->
+  <div class="panel" id="gbPanel">
+    <div class="titlebar"><div class="tb-title">📖 Guestbook — sign it!</div><div class="tb-btns"><span>_</span><span>□</span><span>×</span></div></div>
+    <div class="panel-body">
+      <div id="gbList"><div class="hint">loading signatures…</div></div>
+      <div class="gb-form">
+        <div style="display:flex;gap:8px;flex-wrap:wrap">
+          <input id="gbName" style="flex:1 1 160px" maxlength="40" placeholder="your name" />
+          <input id="gbMsg" style="flex:3 1 260px" maxlength="280" placeholder="leave a note for the wall…" />
+          <button class="cyan" id="gbBtn">✍️ Sign</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="construction" title="under construction!"></div>
+
+  <footer>
+    <div class="badges">
+      <div class="badge88 b1">BEST VIEWED<br>WITH ♥</div>
+      <div class="badge88 b2">MADE ON<br>A PC</div>
+      <div class="badge88 b3">NETSCAPE<br>NOW!</div>
+      <div class="badge88 b4">Y2K<br>COMPLIANT</div>
+    </div>
+    <div class="webring">
+      <a href="#" id="ringPrev">◄ prev</a>
+      <span>✦ Cheesehead Memory Webring ✦</span>
+      <a href="#" id="ringNext">next ►</a>
+    </div>
+    <div>Best viewed in Netscape Navigator 4.0 @ 800×600 🖥️</div>
+    <div class="foot-links">
+      <a href="#" id="topLink">▲ back to top</a> &nbsp;•&nbsp;
+      <a href="#" id="sparkleToggle">✨ sparkles: ON</a> &nbsp;•&nbsp;
+      <span id="ownerSettings" class="owner-only" style="display:none"><a href="#" id="changePass">🔑 change passcode</a> &nbsp;•&nbsp; <a href="#" id="signOut">🔓 sign out</a> &nbsp;•&nbsp;</span>
+      <span>© 2026 &amp; 4ever 💖</span>
+    </div>
+  </footer>
+</div>
+
+<div id="lightbox"><img id="lbImg" alt="" /><div class="cap" id="lbCap"></div></div>
+<div id="toast"></div>
+
+<script>
+/* ============ CONFIG ============ */
+const SUPABASE_URL = "https://wcqwlnpokbslcicescdl.supabase.co";
+const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6IndjcXdsbnBva2JzbGNpY2VzY2RsIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODAxNTM0MTIsImV4cCI6MjA5NTcyOTQxMn0.Ohv0mMVom9k2cuYqGRABdBS6Guf7ofFEHFIj5AIF5W4";
+const sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+const REACTIONS = ["❤️","😍","😂","🎉","🔥","🥹"];
+const MOODS = ["😀","😍","🥹","😎","🤩","🥳","😌","🤔","😭","😡","🤒","😴","🎉","❤️","🔥","🎂","✈️","🏖️","🍻","🎄","☀️","🌧️","🐱","🎸","🏈","⚾"];
+
+/* ============ STATE ============ */
+let allEntries = [];
+let formPhotos = [];   // {type:'url',url} | {type:'file',file,preview}
+let editingId = null;
+let selectedMood = "";
+
+/* ============ HELPERS ============ */
+const $ = (id)=>document.getElementById(id);
+function esc(s){return String(s==null?"":s).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;","'":"&#39;"}[c]));}
+function isHttp(u){return /^https?:\/\//i.test(u||"");}
+function toast(msg,isErr){const t=$("toast");t.textContent=msg;t.className=isErr?"show err":"show";clearTimeout(t._t);t._t=setTimeout(()=>t.className=t.className.replace("show","").trim(),3200);}
+function fmtDate(s){const[Y,M,D]=String(s).split("-").map(Number);const mo=["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];return `${mo[(M||1)-1]} ${D}, ${Y}`;}
+function todayISO(){const d=new Date();const p=n=>String(n).padStart(2,"0");return `${d.getFullYear()}-${p(d.getMonth()+1)}-${p(d.getDate())}`;}
+
+/* passcode (owner) stored locally only after server verification */
+function getPass(){return localStorage.getItem("tc_pass")||"";}
+function isOwner(){return !!getPass();}
+function applyOwnerUI(){document.body.classList.toggle("owner",isOwner());$("ownerSettings").style.display=isOwner()?"inline":"none";$("lockBtn").textContent=isOwner()?"🔓 Owner":"🔒 Owner";}
+
+/* ============ MARQUEE ============ */
+function buildMarquee(extra){
+  const base = `✶ welcome to the TIME CAPSULE ✶  📸 upload pics &middot; ✍️ write memories &middot; 🔗 share the link  ✶  ${extra||""}  💾 sign the guestbook!  ✶  thanks 4 visiting!! ✶  `;
+  $("marquee").innerHTML = `<span>${base}</span><span>${base}</span>`;
+}
+
+/* ============ LIGHTBOX ============ */
+function openLightbox(url,cap){$("lbImg").src=url;$("lbCap").textContent=cap||"";$("lightbox").style.display="flex";}
+$("lightbox").addEventListener("click",()=>{$("lightbox").style.display="none";$("lbImg").src="";});
+
+/* ============ IMAGE RESIZE ============ */
+function resizeImage(file){
+  return new Promise((resolve,reject)=>{
+    if(file.type==="image/gif"){resolve(file);return;} // keep gifs animated
+    const img=new Image();const url=URL.createObjectURL(file);
+    img.onload=()=>{
+      URL.revokeObjectURL(url);
+      const MAX=1400;let{width:w,height:h}=img;
+      if(w>MAX||h>MAX){const r=Math.min(MAX/w,MAX/h);w=Math.round(w*r);h=Math.round(h*r);}
+      const c=document.createElement("canvas");c.width=w;c.height=h;
+      const ctx=c.getContext("2d");ctx.fillStyle="#fff";ctx.fillRect(0,0,w,h);ctx.drawImage(img,0,0,w,h);
+      c.toBlob(b=>b?resolve(b):reject(new Error("encode failed")),"image/jpeg",0.82);
+    };
+    img.onerror=()=>{URL.revokeObjectURL(url);reject(new Error("could not read image"));};
+    img.src=url;
+  });
+}
+async function uploadPhotos(){
+  const urls=[];
+  for(const p of formPhotos){
+    if(p.type==="url"){urls.push(p.url);continue;}
+    const blob=await resizeImage(p.file);
+    const ext=(blob.type==="image/gif")?"gif":"jpg";
+    const path=`mem/${Date.now()}-${Math.random().toString(36).slice(2,8)}.${ext}`;
+    const{error}=await sb.storage.from("photos").upload(path,blob,{contentType:blob.type||"image/jpeg",upsert:false});
+    if(error)throw error;
+    const{data}=sb.storage.from("photos").getPublicUrl(path);
+    urls.push(data.publicUrl);
+  }
+  return urls;
+}
+
+/* ============ FORM ============ */
+function buildMoodPicker(){
+  $("moodPick").innerHTML=MOODS.map(m=>`<span class="m" data-m="${m}">${m}</span>`).join("");
+  $("moodPick").querySelectorAll(".m").forEach(el=>el.addEventListener("click",()=>{
+    if(selectedMood===el.dataset.m){selectedMood="";el.classList.remove("sel");}
+    else{selectedMood=el.dataset.m;$("moodPick").querySelectorAll(".m").forEach(x=>x.classList.remove("sel"));el.classList.add("sel");}
+  }));
+}
+function renderThumbs(){
+  $("thumbRow").innerHTML=formPhotos.map((p,i)=>{
+    const src=p.type==="url"?p.url:p.preview;
+    return `<div class="thumb"><img src="${esc(src)}" alt=""><button class="x" data-i="${i}" title="remove">✕</button></div>`;
+  }).join("");
+  $("thumbRow").querySelectorAll(".x").forEach(b=>b.addEventListener("click",()=>{
+    const i=+b.dataset.i;const p=formPhotos[i];if(p&&p.preview)URL.revokeObjectURL(p.preview);
+    formPhotos.splice(i,1);renderThumbs();
+  }));
+}
+function openForm(entry){
+  editingId = entry? entry.id : null;
+  $("formTitle").textContent = entry? "✏️ Edit Entry" : "📝 New Entry";
+  $("fTitle").value = entry? entry.title : "";
+  $("fAuthor").value = entry? entry.author : (localStorage.getItem("tc_name")||"");
+  $("fDate").value = entry? entry.entry_date : todayISO();
+  $("fBody").value = entry? entry.body : "";
+  $("fTags").value = entry? (entry.tags||[]).join(", ") : "";
+  selectedMood = entry? (entry.mood||"") : "";
+  $("moodPick").querySelectorAll(".m").forEach(x=>x.classList.toggle("sel",x.dataset.m===selectedMood));
+  formPhotos = entry? (entry.photo_urls||[]).map(u=>({type:"url",url:u})) : [];
+  $("fPhotos").value="";renderThumbs();
+  $("formStatus").textContent="";
+  $("formPanel").style.display="block";
+  $("formPanel").scrollIntoView({behavior:"smooth",block:"start"});
+}
+function closeForm(){$("formPanel").style.display="none";formPhotos.forEach(p=>p.preview&&URL.revokeObjectURL(p.preview));formPhotos=[];editingId=null;}
+
+$("fPhotos").addEventListener("change",e=>{
+  for(const f of e.target.files){
+    if(!f.type.startsWith("image/")){toast("only images please!",true);continue;}
+    formPhotos.push({type:"file",file:f,preview:URL.createObjectURL(f)});
+  }
+  $("fPhotos").value="";renderThumbs();
+});
+
+async function saveEntry(){
+  const title=$("fTitle").value.trim();
+  const body=$("fBody").value.trim();
+  if(!title && !body && formPhotos.length===0){toast("add a title, story, or a photo first!",true);return;}
+  const author=($("fAuthor").value.trim()||"Anonymous");
+  localStorage.setItem("tc_name",author==="Anonymous"?"":author);
+  const entry_date=$("fDate").value||todayISO();
+  const tags=$("fTags").value.split(",").map(t=>t.trim()).filter(Boolean).slice(0,12);
+  const btn=$("saveBtn");btn.disabled=true;
+  try{
+    $("formStatus").textContent="📤 uploading photos…";
+    const photo_urls=await uploadPhotos();
+    $("formStatus").textContent="💾 saving…";
+    if(editingId){
+      const{error}=await sb.rpc("update_entry",{p_id:editingId,p_pass:getPass(),p_title:title,p_body:body,p_entry_date:entry_date,p_author:author,p_mood:selectedMood,p_tags:tags,p_photo_urls:photo_urls});
+      if(error)throw error;
+      toast("entry updated! ✨");
+    }else{
+      const{error}=await sb.from("entries").insert({title,body,entry_date,author,mood:selectedMood,tags,photo_urls});
+      if(error)throw error;
+      toast("saved to the capsule! 🎉");
+    }
+    closeForm();
+    await loadEntries();
+  }catch(err){
+    console.error(err);
+    $("formStatus").textContent="";
+    toast("save failed: "+(err.message||err),true);
+  }finally{btn.disabled=false;}
+}
+
+/* ============ RENDER FEED ============ */
+function galleryHTML(urls,title){
+  const good=(urls||[]).filter(isHttp);
+  if(!good.length)return "";
+  return `<div class="gallery">${good.map(u=>`<img loading="lazy" src="${esc(u)}" alt="photo" data-full="${esc(u)}" data-cap="${esc(title||"")}">`).join("")}</div>`;
+}
+function reactHTML(e){
+  const r=e.reactions||{};
+  return `<div class="reactbar">${REACTIONS.map(em=>`<button class="react" data-id="${e.id}" data-em="${em}">${em}<span class="c">${r[em]||0}</span></button>`).join("")}
+    <div class="owner-actions owner-only"><button data-edit="${e.id}">✏️ edit</button><button data-del="${e.id}">🗑️ delete</button></div></div>`;
+}
+function tagsHTML(tags){const t=(tags||[]).filter(Boolean);if(!t.length)return "";return `<div class="tags">${t.map(x=>`<span class="tag" data-tag="${esc(x)}">#${esc(x)}</span>`).join("")}</div>`;}
+function entryHTML(e){
+  return `<div class="panel entry" data-eid="${e.id}">
+    <div class="titlebar"><div class="tb-title">📌 ${esc(e.author||"Anonymous")}</div><div class="date">${fmtDate(e.entry_date)}</div></div>
+    <div class="ebody">
+      <div class="emeta">${e.mood?`<span class="mood-badge">${esc(e.mood)}</span>`:""}<h3 class="etitle">${esc(e.title)||"<i>untitled</i>"}</h3></div>
+      <div class="byline">by <b>${esc(e.author||"Anonymous")}</b></div>
+      ${e.body?`<div class="etext">${esc(e.body).replace(/\n/g,"<br>")}</div>`:""}
+      ${galleryHTML(e.photo_urls,e.title)}
+      ${tagsHTML(e.tags)}
+      ${reactHTML(e)}
+    </div></div>`;
+}
+function applyFilters(list){
+  const q=$("search").value.trim().toLowerCase();
+  const tag=$("tagFilter").value;
+  const who=$("authorFilter").value;
+  let out=list.filter(e=>{
+    if(tag && !(e.tags||[]).includes(tag))return false;
+    if(who && (e.author||"Anonymous")!==who)return false;
+    if(q){
+      const hay=`${e.title} ${e.body} ${e.author} ${(e.tags||[]).join(" ")}`.toLowerCase();
+      if(!hay.includes(q))return false;
+    }
+    return true;
+  });
+  const sort=$("sortSel").value;
+  out.sort((a,b)=>{const c=String(a.entry_date).localeCompare(String(b.entry_date));return sort==="old"?c:-c;});
+  return out;
+}
+function renderFeed(){
+  const list=applyFilters(allEntries);
+  const feed=$("feed");
+  if(!list.length){feed.innerHTML=`<div class="panel"><div class="panel-body" style="text-align:center">🫙 nothing here yet. hit <b>＋ New Entry</b> to start the capsule!</div></div>`;}
+  else{feed.innerHTML=list.map(entryHTML).join("");}
+  // wire interactions
+  feed.querySelectorAll(".gallery img").forEach(img=>img.addEventListener("click",()=>openLightbox(img.dataset.full,img.dataset.cap)));
+  feed.querySelectorAll(".tag").forEach(t=>t.addEventListener("click",()=>{$("tagFilter").value=t.dataset.tag;renderFeed();window.scrollTo({top:0,behavior:"smooth"});}));
+  feed.querySelectorAll(".react").forEach(b=>b.addEventListener("click",()=>react(b.dataset.id,b.dataset.em,b)));
+  feed.querySelectorAll("[data-edit]").forEach(b=>b.addEventListener("click",()=>{const e=allEntries.find(x=>x.id===b.dataset.edit);if(e)openForm(e);}));
+  feed.querySelectorAll("[data-del]").forEach(b=>b.addEventListener("click",()=>delEntry(b.dataset.del)));
+}
+function populateFilters(){
+  const tags=new Set(),authors=new Set();
+  allEntries.forEach(e=>{(e.tags||[]).forEach(t=>t&&tags.add(t));authors.add(e.author||"Anonymous");});
+  const tf=$("tagFilter"),af=$("authorFilter");
+  const tv=tf.value,av=af.value;
+  tf.innerHTML=`<option value="">all</option>`+[...tags].sort().map(t=>`<option>${esc(t)}</option>`).join("");
+  af.innerHTML=`<option value="">everyone</option>`+[...authors].sort().map(a=>`<option>${esc(a)}</option>`).join("");
+  tf.value=tv;af.value=av;
+}
+
+/* ============ ON THIS DAY ============ */
+function renderOnThisDay(){
+  const d=new Date();const m=d.getMonth(),day=d.getDate(),yr=d.getFullYear();
+  const hits=allEntries.filter(e=>{const[Y,M,D]=String(e.entry_date).split("-").map(Number);return (M-1)===m && D===day && Y<yr;})
+    .sort((a,b)=>String(b.entry_date).localeCompare(String(a.entry_date)));
+  const body=$("otdBody");
+  if(!hits.length){
+    body.innerHTML=`<div class="otd-empty">📭 no memories from <b>${["January","February","March","April","May","June","July","August","September","October","November","December"][m]} ${day}</b> in years past — yet! Add a memory on this date and it'll show up here next year. 🔮</div>`;
+    return;
+  }
+  body.innerHTML=`<div class="otd-head">✨ ${hits.length} ${hits.length>1?"memories":"memory"} from this day ✨</div>`+
+    hits.map(e=>{
+      const y=yr-Number(String(e.entry_date).split("-")[0]);
+      const thumbs=(e.photo_urls||[]).filter(isHttp).slice(0,4).map(u=>`<img src="${esc(u)}" data-full="${esc(u)}" data-cap="${esc(e.title||"")}" alt="">`).join("");
+      const snip=(e.body||"").slice(0,160);
+      return `<div class="otd-card">
+        <div class="otd-years"><b>${y}</b>year${y>1?"s":""}<br>ago</div>
+        <div class="otd-body">
+          <h4>${e.mood?esc(e.mood)+" ":""}${esc(e.title)||"<i>untitled</i>"} <span class="mini">— ${fmtDate(e.entry_date)} · by ${esc(e.author||"Anonymous")}</span></h4>
+          ${snip?`<div>${esc(snip)}${(e.body||"").length>160?"…":""}</div>`:""}
+          ${thumbs?`<div class="otd-thumbs">${thumbs}</div>`:""}
+        </div></div>`;
+    }).join("");
+  body.querySelectorAll("img").forEach(img=>img.addEventListener("click",()=>openLightbox(img.dataset.full,img.dataset.cap)));
+}
+
+/* ============ REACTIONS ============ */
+async function react(id,em,btn){
+  btn.disabled=true;
+  try{
+    const{data,error}=await sb.rpc("add_reaction",{p_entry_id:id,p_emoji:em});
+    if(error)throw error;
+    const e=allEntries.find(x=>x.id===id);if(e)e.reactions=data||e.reactions;
+    const span=btn.querySelector(".c");if(span&&data)span.textContent=data[em]||0;
+  }catch(err){toast("couldn't react: "+(err.message||err),true);}
+  finally{btn.disabled=false;}
+}
+
+/* ============ DELETE ============ */
+async function delEntry(id){
+  if(!isOwner()){toast("owner only — click 🔒 Owner first",true);return;}
+  if(!confirm("Delete this memory forever? This cannot be undone."))return;
+  try{
+    const{error}=await sb.rpc("delete_entry",{p_id:id,p_pass:getPass()});
+    if(error)throw error;
+    toast("entry deleted");
+    await loadEntries();
+  }catch(err){toast("delete failed: "+(err.message||err),true);}
+}
+
+/* ============ GUESTBOOK ============ */
+async function loadGuestbook(){
+  try{
+    const{data,error}=await sb.from("guestbook").select("*").order("created_at",{ascending:false}).limit(100);
+    if(error)throw error;
+    const list=$("gbList");
+    if(!data.length){list.innerHTML=`<div class="hint">no signatures yet — be the first! 🖊️</div>`;return;}
+    list.innerHTML=data.map(g=>`<div class="gb-entry"><span class="gb-when">${new Date(g.created_at).toLocaleDateString()}</span><span class="gb-who">${esc(g.name||"Anonymous")}</span> says:<br>${esc(g.message)}</div>`).join("");
+  }catch(err){$("gbList").innerHTML=`<div class="hint">couldn't load guestbook 😢</div>`;}
+}
+async function signGuestbook(){
+  const message=$("gbMsg").value.trim();
+  if(!message){toast("write a note first!",true);return;}
+  const name=$("gbName").value.trim()||"Anonymous";
+  $("gbBtn").disabled=true;
+  try{
+    const{error}=await sb.from("guestbook").insert({name,message});
+    if(error)throw error;
+    $("gbMsg").value="";toast("signed the guestbook! 💖");
+    await loadGuestbook();
+  }catch(err){toast("oops: "+(err.message||err),true);}
+  finally{$("gbBtn").disabled=false;}
+}
+
+/* ============ VISITOR COUNTER ============ */
+function setOdometer(n){
+  const s=String(Math.max(0,n)).padStart(6,"0").slice(-6);
+  $("odometer").innerHTML=s.split("").map(d=>`<span class="d">${d}</span>`).join("");
+}
+async function bumpVisits(){
+  try{
+    let n;
+    if(sessionStorage.getItem("tc_counted")){
+      const{data}=await sb.from("site_stats").select("value").eq("id","visits").single();
+      n=data?data.value:0;
+    }else{
+      const{data,error}=await sb.rpc("increment_visits");
+      if(error)throw error;
+      n=data;sessionStorage.setItem("tc_counted","1");
+    }
+    setOdometer(n||0);
+  }catch(err){/* counter is non-critical */}
+}
+
+/* ============ OWNER MODE ============ */
+async function ownerPrompt(){
+  if(isOwner()){toast("you're already in owner mode 🔓");return;}
+  const p=prompt("Enter the owner passcode to unlock edit & delete:");
+  if(p===null)return;
+  try{
+    const{data,error}=await sb.rpc("verify_passcode",{p_pass:p});
+    if(error)throw error;
+    if(data){localStorage.setItem("tc_pass",p);applyOwnerUI();renderFeed();toast("owner mode unlocked 🔓");}
+    else toast("wrong passcode 🚫",true);
+  }catch(err){toast("error: "+(err.message||err),true);}
+}
+async function changePasscode(e){
+  e&&e.preventDefault();
+  const np=prompt("New passcode (min 4 chars):");
+  if(np===null)return;
+  try{
+    const{data,error}=await sb.rpc("set_passcode",{p_old:getPass(),p_new:np});
+    if(error)throw error;
+    if(data){localStorage.setItem("tc_pass",np);toast("passcode changed 🔑");}
+  }catch(err){toast("couldn't change: "+(err.message||err),true);}
+}
+function signOut(e){e&&e.preventDefault();localStorage.removeItem("tc_pass");applyOwnerUI();renderFeed();toast("signed out of owner mode");}
+
+/* ============ LOAD ============ */
+async function loadEntries(){
+  try{
+    const{data,error}=await sb.from("entries").select("*").order("entry_date",{ascending:false}).order("created_at",{ascending:false});
+    if(error)throw error;
+    allEntries=data||[];
+    $("countPill").textContent=`📓 ${allEntries.length} ${allEntries.length===1?"memory":"memories"}`;
+    populateFilters();renderFeed();renderOnThisDay();
+    const otd=allEntries.filter(e=>{const d=new Date();const[Y,M,D]=String(e.entry_date).split("-").map(Number);return (M-1)===d.getMonth()&&D===d.getDate()&&Y<d.getFullYear();}).length;
+    buildMarquee(otd?`🕰️ ${otd} memory(s) on this day in years past — scroll down!  ✶`:"");
+  }catch(err){
+    console.error(err);
+    $("feed").innerHTML=`<div class="panel"><div class="panel-body err" style="color:#900">⚠️ couldn't load memories: ${esc(err.message||String(err))}</div></div>`;
+    toast("load error: "+(err.message||err),true);
+  }
+}
+
+/* ============ WIRE UP ============ */
+function init(){
+  buildMoodPicker();buildMarquee("");
+  const d=new Date();
+  $("datePill").textContent="📅 "+d.toLocaleDateString(undefined,{weekday:"long",month:"long",day:"numeric",year:"numeric"});
+  $("fDate").value=todayISO();
+  applyOwnerUI();
+
+  $("newBtn").addEventListener("click",()=>openForm(null));
+  $("formClose").addEventListener("click",closeForm);
+  $("cancelBtn").addEventListener("click",closeForm);
+  $("saveBtn").addEventListener("click",saveEntry);
+  $("search").addEventListener("input",renderFeed);
+  $("tagFilter").addEventListener("change",renderFeed);
+  $("authorFilter").addEventListener("change",renderFeed);
+  $("sortSel").addEventListener("change",renderFeed);
+  $("lockBtn").addEventListener("click",ownerPrompt);
+  $("gbBtn").addEventListener("click",signGuestbook);
+  $("changePass").addEventListener("click",changePasscode);
+  $("signOut").addEventListener("click",signOut);
+  $("topLink").addEventListener("click",e=>{e.preventDefault();window.scrollTo({top:0,behavior:"smooth"});});
+  ["ringPrev","ringNext"].forEach(id=>$(id).addEventListener("click",e=>{e.preventDefault();toast("🌐 the webring goes nowhere… it's just vibes ✨");}));
+
+  // sparkle toggle
+  let sparkleOn = localStorage.getItem("tc_sparkle")!=="off";
+  const stog=$("sparkleToggle");
+  function syncSpark(){stog.textContent="✨ sparkles: "+(sparkleOn?"ON":"OFF");}
+  syncSpark();
+  stog.addEventListener("click",e=>{e.preventDefault();sparkleOn=!sparkleOn;localStorage.setItem("tc_sparkle",sparkleOn?"on":"off");syncSpark();});
+  let lastSpark=0;
+  window.addEventListener("pointermove",e=>{
+    if(!sparkleOn)return;const now=Date.now();if(now-lastSpark<55)return;lastSpark=now;
+    const s=document.createElement("div");s.className="sparkle";s.textContent=["✨","✦","⋆","🌟","💫"][Math.floor(Math.random()*5)];
+    s.style.left=e.clientX+"px";s.style.top=e.clientY+"px";document.body.appendChild(s);
+    const dx=(Math.random()*2-1)*30,dy=20+Math.random()*30;
+    s.animate([{transform:"translate(0,0) scale(1)",opacity:1},{transform:`translate(${dx}px,${dy}px) scale(0)`,opacity:0}],{duration:750,easing:"ease-out"}).onfinish=()=>s.remove();
+  });
+
+  loadEntries();loadGuestbook();bumpVisits();
+}
+if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",init);else init();
+</script>
+</body>
+</html>
