@@ -16,8 +16,58 @@
   --hot:#ff2d9b; --hot-lt:#ff8fd6; --cyan:#23e7ff; --cyan-dk:#00a6c4;
   --purple:#a64dff; --lime:#c6ff2e; --yellow:#ffe24d; --teal:#13c6b3;
   --titlebar1:#13007c; --titlebar2:#2f8fe6; --ink:#13003a; --link:#1010ee; --linkv:#7a18c4;
+  --bg:#1a0140;
+  --bgimg:
+    radial-gradient(circle at 12% 18%, rgba(255,45,155,.35), transparent 40%),
+    radial-gradient(circle at 88% 12%, rgba(35,231,255,.30), transparent 42%),
+    radial-gradient(circle at 75% 88%, rgba(166,77,255,.40), transparent 45%),
+    radial-gradient(circle at 25% 85%, rgba(19,198,179,.30), transparent 45%),
+    linear-gradient(165deg,#2b0a64 0%, #160a52 45%, #0a0a4a 100%);
   --pixel:'Press Start 2P', system-ui, sans-serif;
   --mono:'VT323', monospace; --body:'Comic Neue','Comic Sans MS','Comic Sans', cursive, sans-serif;
+}
+/* ===== rotating Y2K themes (palette swaps; panels stay Win9x for readability) ===== */
+body.t-dairy{
+  --hot:#d6332e; --hot-lt:#ff8a7a; --cyan:#3aa655; --cyan-dk:#1f7a38;
+  --purple:#9c6b3f; --lime:#9fd13a; --yellow:#ffcf3f;
+  --titlebar1:#7a1f1f; --titlebar2:#d6332e; --ink:#2b1a0a; --link:#1f7a38; --linkv:#8a5a2b;
+  --bg:#3f7d3a;
+  --bgimg:
+    radial-gradient(circle at 50% 6%, rgba(255,224,120,.55), transparent 45%),
+    radial-gradient(circle at 12% 92%, rgba(214,51,46,.28), transparent 52%),
+    linear-gradient(180deg,#9fd0ff 0%, #8fd0d6 28%, #5aa64b 54%, #2f7a2e 100%);
+}
+body.t-pack{
+  --hot:#ffb612; --hot-lt:#ffd571; --cyan:#2e8b57; --cyan-dk:#1c5c39;
+  --purple:#1a2e22; --lime:#ffb612; --yellow:#ffd23f;
+  --titlebar1:#10241b; --titlebar2:#23533a; --ink:#0f241a; --link:#1c7a45; --linkv:#b8860b;
+  --bg:#14271d;
+  --bgimg:
+    radial-gradient(circle at 50% 12%, rgba(255,182,18,.42), transparent 46%),
+    radial-gradient(circle at 85% 86%, rgba(46,139,87,.45), transparent 52%),
+    repeating-linear-gradient(135deg, rgba(255,182,18,.06) 0 22px, transparent 22px 44px),
+    linear-gradient(180deg,#203731 0%, #14271d 100%);
+}
+body.t-cone{
+  --hot:#ff7eb6; --hot-lt:#ffd0e6; --cyan:#6fd6c8; --cyan-dk:#2fa6a0;
+  --purple:#b39ddb; --lime:#bde36b; --yellow:#ffe98a;
+  --titlebar1:#ff6fae; --titlebar2:#ffa6cf; --ink:#5a2a3a; --link:#e0559e; --linkv:#9b6fd6;
+  --bg:#ffeaf4;
+  --bgimg:
+    radial-gradient(circle at 15% 20%, rgba(255,126,182,.45), transparent 42%),
+    radial-gradient(circle at 85% 24%, rgba(111,214,200,.45), transparent 42%),
+    radial-gradient(circle at 70% 86%, rgba(179,157,219,.42), transparent 46%),
+    linear-gradient(180deg,#fff7fb 0%, #ffeaf4 50%, #eafaf6 100%);
+}
+body.t-tundra{
+  --hot:#3aa0ff; --hot-lt:#9fd2ff; --cyan:#7fe7ff; --cyan-dk:#0095c4;
+  --purple:#6b8cae; --lime:#bfe8ff; --yellow:#eaf6ff;
+  --titlebar1:#0a3a66; --titlebar2:#2a78c2; --ink:#0a2238; --link:#0a6fb5; --linkv:#5b7fae;
+  --bg:#0b2438;
+  --bgimg:
+    radial-gradient(circle at 50% 0%, rgba(234,246,255,.5), transparent 42%),
+    radial-gradient(circle at 20% 92%, rgba(58,160,255,.30), transparent 52%),
+    linear-gradient(180deg,#0e3a5c 0%, #0b2438 60%, #06121f 100%);
 }
 *{box-sizing:border-box}
 html,body{margin:0;padding:0}
@@ -26,14 +76,10 @@ body{
   color:var(--ink);
   font-size:18px;
   line-height:1.45;
-  background-color:#1a0140;
-  background-image:
-    radial-gradient(circle at 12% 18%, rgba(255,45,155,.35), transparent 40%),
-    radial-gradient(circle at 88% 12%, rgba(35,231,255,.30), transparent 42%),
-    radial-gradient(circle at 75% 88%, rgba(166,77,255,.40), transparent 45%),
-    radial-gradient(circle at 25% 85%, rgba(19,198,179,.30), transparent 45%),
-    linear-gradient(165deg,#2b0a64 0%, #160a52 45%, #0a0a4a 100%);
+  background-color:var(--bg);
+  background-image:var(--bgimg);
   background-attachment:fixed;
+  transition:background-color .9s ease, color .9s ease;
   cursor:url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' width='28' height='28' viewBox='0 0 28 28'><text y='22' font-size='22'>✨</text></svg>") 4 4, auto;
   overflow-x:hidden;
 }
@@ -192,6 +238,10 @@ footer a{color:var(--cyan)}
   .gallery img{height:104px}
 }
 .loading{padding:24px;text-align:center;font-family:var(--mono);font-size:24px;color:#0a7}
+/* animated themed drifters + smooth palette transitions */
+.drifter{position:fixed;z-index:0;pointer-events:none;will-change:transform,opacity;filter:drop-shadow(1px 1px 0 rgba(0,0,0,.25))}
+.titlebar,.pill,.tag,.react,button.primary,button.cyan{transition:background .6s ease,color .6s ease,border-color .6s ease}
+.otd-years{transition:background .6s ease}
 </style>
 </head>
 <body>
@@ -227,6 +277,7 @@ footer a{color:var(--cyan)}
       <div class="seg"><small>tag</small><select id="tagFilter"><option value="">all</option></select></div>
       <div class="seg"><small>who</small><select id="authorFilter"><option value="">everyone</option></select></div>
       <div class="seg"><small>sort</small><select id="sortSel"><option value="new">newest first</option><option value="old">oldest first</option></select></div>
+      <button id="themeBtn" title="change theme">🎨 Theme</button>
       <button id="lockBtn" title="owner tools">🔒 Owner</button>
     </div>
   </div>
@@ -237,7 +288,9 @@ footer a{color:var(--cyan)}
     <div class="panel-body">
       <div class="form-grid">
         <div class="full"><label>Title</label><input id="fTitle" maxlength="120" placeholder="e.g. Best ✨ day ✨ ever" /></div>
-        <div><label>Your name</label><input id="fAuthor" maxlength="40" placeholder="who's writing?" /></div>
+        <div><label>Who's writing?</label>
+          <select id="fAuthorSel"></select>
+          <input id="fAuthor" maxlength="40" placeholder="type a name" style="display:none;margin-top:6px" /></div>
         <div><label>Date of memory</label><input id="fDate" type="date" /></div>
         <div class="full"><label>Mood</label><div class="moodpick" id="moodPick"></div></div>
         <div class="full"><label>Story</label><textarea id="fBody" placeholder="what happened? how'd it feel?"></textarea></div>
@@ -293,6 +346,7 @@ footer a{color:var(--cyan)}
     <div class="foot-links">
       <a href="#" id="topLink">▲ back to top</a> &nbsp;•&nbsp;
       <a href="#" id="sparkleToggle">✨ sparkles: ON</a> &nbsp;•&nbsp;
+      <a href="#" id="rotToggle">🔄 auto-themes: ON</a> &nbsp;•&nbsp;
       <span id="ownerSettings" class="owner-only" style="display:none"><a href="#" id="changePass">🔑 change passcode</a> &nbsp;•&nbsp; <a href="#" id="signOut">🔓 sign out</a> &nbsp;•&nbsp;</span>
       <span>© 2026 &amp; 4ever 💖</span>
     </div>
@@ -310,6 +364,15 @@ const sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
 const REACTIONS = ["❤️","😍","😂","🎉","🔥","🥹"];
 const MOODS = ["😀","😍","🥹","😎","🤩","🥳","😌","🤔","😭","😡","🤒","😴","🎉","❤️","🔥","🎂","✈️","🏖️","🍻","🎄","☀️","🌧️","🐱","🎸","🏈","⚾"];
+const USERS = ["Mason Fleek","Shannon nordan","Dirtbag French","Kar French","daBrutus Thompson","Grace Morgin"];
+const THEMES = [
+  {id:"",        name:"Y2K",           emoji:["✨","💿","🌐","⭐","📟"], dir:"up"},
+  {id:"t-dairy", name:"Dairyland",     emoji:["🧀","🐄","🥛","🌽","☁️"], dir:"up"},
+  {id:"t-pack",  name:"Packers",       emoji:["🏈","🧀","💚","💛","⭐"], dir:"up"},
+  {id:"t-cone",  name:"Ice Cream",     emoji:["🍦","🍨","🧁","🍧","🌈"], dir:"up"},
+  {id:"t-tundra",name:"Frozen Tundra", emoji:["❄️","⛄","🌨️","🏒","✨"], dir:"down"}
+];
+let themeIdx = 0, rotateOn = true, rotateTimer = null, driftTimer = null;
 
 /* ============ STATE ============ */
 let allEntries = [];
@@ -394,7 +457,7 @@ function openForm(entry){
   editingId = entry? entry.id : null;
   $("formTitle").textContent = entry? "✏️ Edit Entry" : "📝 New Entry";
   $("fTitle").value = entry? entry.title : "";
-  $("fAuthor").value = entry? entry.author : (localStorage.getItem("tc_name")||"");
+  setAuthorValue(entry? entry.author : (localStorage.getItem("tc_name")||""));
   $("fDate").value = entry? entry.entry_date : todayISO();
   $("fBody").value = entry? entry.body : "";
   $("fTags").value = entry? (entry.tags||[]).join(", ") : "";
@@ -420,7 +483,7 @@ async function saveEntry(){
   const title=$("fTitle").value.trim();
   const body=$("fBody").value.trim();
   if(!title && !body && formPhotos.length===0){toast("add a title, story, or a photo first!",true);return;}
-  const author=($("fAuthor").value.trim()||"Anonymous");
+  const author=getAuthorValue();
   localStorage.setItem("tc_name",author==="Anonymous"?"":author);
   const entry_date=$("fDate").value||todayISO();
   const tags=$("fTags").value.split(",").map(t=>t.trim()).filter(Boolean).slice(0,12);
@@ -503,6 +566,7 @@ function renderFeed(){
 function populateFilters(){
   const tags=new Set(),authors=new Set();
   allEntries.forEach(e=>{(e.tags||[]).forEach(t=>t&&tags.add(t));authors.add(e.author||"Anonymous");});
+  USERS.forEach(u=>authors.add(u));
   const tf=$("tagFilter"),af=$("authorFilter");
   const tv=tf.value,av=af.value;
   tf.innerHTML=`<option value="">all</option>`+[...tags].sort().map(t=>`<option>${esc(t)}</option>`).join("");
@@ -645,9 +709,73 @@ async function loadEntries(){
   }
 }
 
+/* ============ THEMES ============ */
+function applyTheme(i,save){
+  themeIdx=(i%THEMES.length+THEMES.length)%THEMES.length;
+  const t=THEMES[themeIdx];
+  document.body.classList.remove("t-dairy","t-pack","t-cone","t-tundra");
+  if(t.id)document.body.classList.add(t.id);
+  const b=$("themeBtn"); if(b)b.textContent="🎨 "+t.name;
+  if(save!==false)localStorage.setItem("tc_theme",String(themeIdx));
+}
+function resetRotate(){
+  if(rotateTimer)clearInterval(rotateTimer);
+  if(rotateOn)rotateTimer=setInterval(()=>applyTheme(themeIdx+1),18000);
+}
+function nextTheme(){applyTheme(themeIdx+1);resetRotate();}
+function setRotate(on){
+  rotateOn=on;localStorage.setItem("tc_rotate",on?"on":"off");
+  const a=$("rotToggle"); if(a)a.textContent="🔄 auto-themes: "+(on?"ON":"OFF");
+  resetRotate();
+}
+/* animated themed confetti that drifts across the screen */
+function startDrifters(){if(driftTimer)clearInterval(driftTimer);driftTimer=setInterval(spawnDrifter,950);}
+function spawnDrifter(){
+  if(document.hidden)return;
+  const t=THEMES[themeIdx];
+  const d=document.createElement("div");
+  d.className="drifter";
+  d.textContent=t.emoji[Math.floor(Math.random()*t.emoji.length)];
+  d.style.fontSize=(18+Math.random()*22)+"px";
+  d.style.left=(Math.random()*100)+"vw";
+  const down=t.dir==="down";
+  d.style.top=down?"-8vh":"104vh";
+  document.body.appendChild(d);
+  const dx=(Math.random()*2-1)*12, rot=(Math.random()*2-1)*140, dur=7000+Math.random()*6000;
+  d.animate([
+    {transform:"translate(0,0) rotate(0deg)",opacity:0},
+    {opacity:.92,offset:.12},
+    {opacity:.92,offset:.85},
+    {transform:`translate(${dx}vw, ${down?"118vh":"-118vh"}) rotate(${rot}deg)`,opacity:0}
+  ],{duration:dur,easing:"linear"}).onfinish=()=>d.remove();
+}
+/* ============ AUTHOR PICKER ============ */
+function buildAuthorSelect(){
+  const sel=$("fAuthorSel");
+  sel.innerHTML=USERS.map(u=>`<option value="${esc(u)}">${esc(u)}</option>`).join("")
+    +`<option value="__anon__">🙈 Anonymous</option><option value="__other__">✏️ someone else…</option>`;
+  sel.addEventListener("change",()=>{
+    const other=sel.value==="__other__";
+    $("fAuthor").style.display=other?"block":"none";
+    if(other)$("fAuthor").focus();
+  });
+}
+function setAuthorValue(name){
+  const sel=$("fAuthorSel");
+  if(name && USERS.includes(name)){sel.value=name;$("fAuthor").style.display="none";$("fAuthor").value="";}
+  else if(name && name!=="Anonymous"){sel.value="__other__";$("fAuthor").style.display="block";$("fAuthor").value=name;}
+  else{sel.value=USERS[0];$("fAuthor").style.display="none";$("fAuthor").value="";}
+}
+function getAuthorValue(){
+  const sel=$("fAuthorSel"),v=sel.value;
+  if(v==="__anon__")return "Anonymous";
+  if(v==="__other__")return ($("fAuthor").value.trim()||"Anonymous");
+  return v;
+}
+
 /* ============ WIRE UP ============ */
 function init(){
-  buildMoodPicker();buildMarquee("");
+  buildMoodPicker();buildMarquee("");buildAuthorSelect();
   const d=new Date();
   $("datePill").textContent="📅 "+d.toLocaleDateString(undefined,{weekday:"long",month:"long",day:"numeric",year:"numeric"});
   $("fDate").value=todayISO();
@@ -662,6 +790,8 @@ function init(){
   $("authorFilter").addEventListener("change",renderFeed);
   $("sortSel").addEventListener("change",renderFeed);
   $("lockBtn").addEventListener("click",ownerPrompt);
+  $("themeBtn").addEventListener("click",nextTheme);
+  $("rotToggle").addEventListener("click",e=>{e.preventDefault();setRotate(!rotateOn);});
   $("gbBtn").addEventListener("click",signGuestbook);
   $("changePass").addEventListener("click",changePasscode);
   $("signOut").addEventListener("click",signOut);
@@ -684,6 +814,11 @@ function init(){
     s.animate([{transform:"translate(0,0) scale(1)",opacity:1},{transform:`translate(${dx}px,${dy}px) scale(0)`,opacity:0}],{duration:750,easing:"ease-out"}).onfinish=()=>s.remove();
   });
 
+  themeIdx=Math.max(0,Math.min(THEMES.length-1,parseInt(localStorage.getItem("tc_theme")||"0",10)||0));
+  rotateOn=localStorage.getItem("tc_rotate")!=="off";
+  applyTheme(themeIdx,false);
+  setRotate(rotateOn);
+  startDrifters();
   loadEntries();loadGuestbook();bumpVisits();
 }
 if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",init);else init();
