@@ -520,7 +520,7 @@ function renderOnThisDay(){
     body.innerHTML=`<div class="otd-empty">📭 no memories from <b>${["January","February","March","April","May","June","July","August","September","October","November","December"][m]} ${day}</b> in years past — yet! Add a memory on this date and it'll show up here next year. 🔮</div>`;
     return;
   }
-  body.innerHTML=`<div class="otd-head">✨ ${hits.length} ${hits.length>1?"memories":"memory"} from this day ✨</div>`+
+  body.innerHTML=`<div class="otd-head">✨ ${hits.length} mem<\/span>${hits.length>1?"ories":"ory"} from this day ✨</div>`.replace("<\/span>","")+
     hits.map(e=>{
       const y=yr-Number(String(e.entry_date).split("-")[0]);
       const thumbs=(e.photo_urls||[]).filter(isHttp).slice(0,4).map(u=>`<img src="${esc(u)}" data-full="${esc(u)}" data-cap="${esc(e.title||"")}" alt="">`).join("");
@@ -667,6 +667,7 @@ function init(){
   $("signOut").addEventListener("click",signOut);
   $("topLink").addEventListener("click",e=>{e.preventDefault();window.scrollTo({top:0,behavior:"smooth"});});
   ["ringPrev","ringNext"].forEach(id=>$(id).addEventListener("click",e=>{e.preventDefault();toast("🌐 the webring goes nowhere… it's just vibes ✨");}));
+  $("lightbox").addEventListener("click",e=>e.stopPropagation(),true);
 
   // sparkle toggle
   let sparkleOn = localStorage.getItem("tc_sparkle")!=="off";
