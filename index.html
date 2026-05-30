@@ -242,6 +242,28 @@ footer a{color:var(--cyan)}
 .drifter{position:fixed;z-index:0;pointer-events:none;will-change:transform,opacity;filter:drop-shadow(1px 1px 0 rgba(0,0,0,.25))}
 .titlebar,.pill,.tag,.react,button.primary,button.cyan{transition:background .6s ease,color .6s ease,border-color .6s ease}
 .otd-years{transition:background .6s ease}
+/* polls */
+.pollbox{margin:10px 0;padding:10px;background:#fff;border:2px solid;border-color:var(--silver-dk) var(--silver-lt) var(--silver-lt) var(--silver-dk)}
+.pollq{font-weight:700;margin-bottom:8px}
+.pollopt{position:relative;display:flex;align-items:center;gap:8px;width:100%;text-align:left;margin:5px 0;padding:7px 10px;overflow:hidden;background:#e9e9ff;border:2px solid;border-color:var(--silver-lt) var(--silver-dk) var(--silver-dk) var(--silver-lt);font-weight:700;color:#1a0033}
+.pollopt:hover:not(:disabled){background:var(--hot-lt)}
+.pollopt .pbar{position:absolute;left:0;top:0;bottom:0;width:0;background:linear-gradient(90deg,var(--cyan),var(--hot));opacity:.35;transition:width .6s ease;z-index:0}
+.pollopt .ptext{position:relative;z-index:1;flex:1}
+.pollopt .pnum{position:relative;z-index:1;font-family:var(--mono);font-size:16px;color:#222;white-space:nowrap}
+.pollopt.voted{cursor:default}
+.polltot{font-size:13px;color:#556;margin-top:4px;font-weight:700}
+/* comments */
+.comments{margin-top:8px}
+.cmt-toggle{font-weight:700;font-size:14px}
+.cmt-wrap{margin-top:6px;border-top:1px dashed #aaa;padding-top:8px}
+.cmt-list{max-height:300px;overflow:auto}
+.cmt{background:#f6f6ff;border:1px solid #ccd;padding:6px 8px;margin:5px 0;font-size:15px}
+.cmt-when{font-size:11px;color:#999}
+.cmt-form{display:flex;gap:6px;flex-wrap:wrap;margin-top:6px}
+.cmt-form .cmt-name{flex:1 1 110px}
+.cmt-form .cmt-body{flex:3 1 200px}
+.entry.flash{animation:flashentry 1.6s ease}
+@keyframes flashentry{0%,100%{box-shadow:3px 3px 0 rgba(0,0,0,.45)}30%{box-shadow:0 0 0 4px var(--yellow),0 0 24px var(--hot)}}
 </style>
 </head>
 <body>
@@ -273,6 +295,7 @@ footer a{color:var(--cyan)}
     <div class="titlebar"><div class="tb-title">🎛️ Controls</div><div class="tb-btns"><span>_</span><span>□</span><span>×</span></div></div>
     <div class="panel-body">
       <button class="primary" id="newBtn">＋ New Entry</button>
+      <button id="surpriseBtn" title="jump to a random memory">🎲 Surprise Me</button>
       <div class="seg grow"><span>🔍</span><input id="search" class="grow" placeholder="search memories…" /></div>
       <div class="seg"><small>tag</small><select id="tagFilter"><option value="">all</option></select></div>
       <div class="seg"><small>who</small><select id="authorFilter"><option value="">everyone</option></select></div>
@@ -299,6 +322,14 @@ footer a{color:var(--cyan)}
           <label>Photos <span class="hint">(jpg / png / gif / webp — added straight to the capsule. big pics get shrunk automatically; GIFs stay animated)</span></label>
           <input id="fPhotos" type="file" accept="image/*" multiple />
           <div class="thumbrow" id="thumbRow"></div>
+        </div>
+        <div class="full">
+          <label><input type="checkbox" id="pollOn" style="width:auto;margin-right:6px;vertical-align:middle">📊 Add a poll <span class="hint">(let people vote)</span></label>
+          <div id="pollBuild" style="display:none;margin-top:6px">
+            <input id="pollQ" maxlength="120" placeholder="Poll question — e.g. Where should we go next?" />
+            <div id="pollOpts" style="margin-top:6px"></div>
+            <button type="button" id="pollAdd" style="margin-top:4px">＋ add option</button>
+          </div>
         </div>
         <div class="full" style="display:flex;gap:10px;align-items:center;flex-wrap:wrap">
           <button class="primary" id="saveBtn">💾 Save to Capsule</button>
@@ -465,6 +496,7 @@ function openForm(entry){
   $("moodPick").querySelectorAll(".m").forEach(x=>x.classList.toggle("sel",x.dataset.m===selectedMood));
   formPhotos = entry? (entry.photo_urls||[]).map(u=>({type:"url",url:u})) : [];
   $("fPhotos").value="";renderThumbs();
+  setFormPoll(entry? entry.poll : null);
   $("formStatus").textContent="";
   $("formPanel").style.display="block";
   $("formPanel").scrollIntoView({behavior:"smooth",block:"start"});
@@ -497,7 +529,7 @@ async function saveEntry(){
       if(error)throw error;
       toast("entry updated! ✨");
     }else{
-      const{error}=await sb.from("entries").insert({title,body,entry_date,author,mood:selectedMood,tags,photo_urls});
+      const{error}=await sb.from("entries").insert({title,body,entry_date,author,mood:selectedMood,tags,photo_urls,poll:getFormPoll()});
       if(error)throw error;
       toast("saved to the capsule! 🎉");
     }
@@ -530,8 +562,10 @@ function entryHTML(e){
       <div class="byline">by <b>${esc(e.author||"Anonymous")}</b></div>
       ${e.body?`<div class="etext">${esc(e.body).replace(/\n/g,"<br>")}</div>`:""}
       ${galleryHTML(e.photo_urls,e.title)}
+      ${pollHTML(e)}
       ${tagsHTML(e.tags)}
       ${reactHTML(e)}
+      ${commentsHTML(e)}
     </div></div>`;
 }
 function applyFilters(list){
@@ -562,6 +596,8 @@ function renderFeed(){
   feed.querySelectorAll(".react").forEach(b=>b.addEventListener("click",()=>react(b.dataset.id,b.dataset.em,b)));
   feed.querySelectorAll("[data-edit]").forEach(b=>b.addEventListener("click",()=>{const e=allEntries.find(x=>x.id===b.dataset.edit);if(e)openForm(e);}));
   feed.querySelectorAll("[data-del]").forEach(b=>b.addEventListener("click",()=>delEntry(b.dataset.del)));
+  feed.querySelectorAll(".pollopt:not(.voted)").forEach(b=>b.addEventListener("click",()=>votePoll(b.dataset.poll,b.dataset.opt)));
+  feed.querySelectorAll(".cmt-toggle").forEach(a=>a.addEventListener("click",ev=>{ev.preventDefault();toggleComments(a.dataset.cmt,a);}));
 }
 function populateFilters(){
   const tags=new Set(),authors=new Set();
@@ -773,15 +809,121 @@ function getAuthorValue(){
   return v;
 }
 
+/* ============ POLLS ============ */
+function pollHTML(e){
+  const p=e.poll; if(!p||!p.q||!Array.isArray(p.opts)||p.opts.length<2)return "";
+  const votes=p.votes||{};
+  const total=p.opts.reduce((s,_,i)=>s+(+votes[i]||0),0);
+  const voted=localStorage.getItem("tc_poll_"+e.id)!=null;
+  const rows=p.opts.map((o,i)=>{
+    const c=+votes[i]||0, pct=total?Math.round(c/total*100):0;
+    return `<button class="pollopt${voted?" voted":""}" data-poll="${e.id}" data-opt="${i}"${voted?" disabled":""}>
+      <span class="pbar" style="width:${voted?pct:0}%"></span>
+      <span class="ptext">${esc(o)}</span>
+      <span class="pnum">${voted?pct+"% · "+c:""}</span></button>`;
+  }).join("");
+  return `<div class="pollbox"><div class="pollq">📊 ${esc(p.q)}</div>${rows}
+    <div class="polltot">${total} vote${total===1?"":"s"}${voted?"":" · tap an option to vote"}</div></div>`;
+}
+async function votePoll(id,opt){
+  if(localStorage.getItem("tc_poll_"+id)!=null)return;
+  try{
+    const{data,error}=await sb.rpc("vote_poll",{p_entry_id:id,p_option:+opt});
+    if(error)throw error;
+    localStorage.setItem("tc_poll_"+id,String(opt));
+    const e=allEntries.find(x=>x.id===id); if(e&&e.poll)e.poll.votes=data||e.poll.votes||{};
+    const box=document.querySelector(`.entry[data-eid="${id}"] .pollbox`);
+    if(box&&e){const w=document.createElement("div");w.innerHTML=pollHTML(e);const fresh=w.firstElementChild;box.replaceWith(fresh);}
+    toast("vote counted! 🗳️");
+  }catch(err){toast("couldn't vote: "+(err.message||err),true);}
+}
+/* ============ COMMENTS ============ */
+function commentsHTML(e){
+  return `<div class="comments"><a href="#" class="cmt-toggle" data-cmt="${e.id}">💬 comments</a>
+    <div class="cmt-wrap" id="cmt-${e.id}" style="display:none"></div></div>`;
+}
+function toggleComments(id,link){
+  const wrap=$("cmt-"+id);
+  if(wrap.style.display==="none"){wrap.style.display="block";link.textContent="💬 hide comments";loadComments(id);}
+  else{wrap.style.display="none";link.textContent="💬 comments";}
+}
+async function loadComments(id){
+  const wrap=$("cmt-"+id); wrap.innerHTML=`<div class="hint">loading…</div>`;
+  try{
+    const{data,error}=await sb.from("comments").select("*").eq("entry_id",id).order("created_at",{ascending:true});
+    if(error)throw error;
+    const list=(data||[]).map(c=>`<div class="cmt"><b>${esc(c.name||"Anonymous")}</b> <span class="cmt-when">${new Date(c.created_at).toLocaleDateString()}</span><br>${esc(c.body).replace(/\n/g,"<br>")}</div>`).join("");
+    wrap.innerHTML=`<div class="cmt-list">${list||`<div class="hint">no comments yet — say something nice 💬</div>`}</div>
+      <div class="cmt-form">
+        <input class="cmt-name" maxlength="40" placeholder="your name" value="${esc(localStorage.getItem("tc_name")||"")}" />
+        <input class="cmt-body" maxlength="280" placeholder="add a comment…" />
+        <button class="cyan cmt-send" data-cmt="${id}">💬 Post</button>
+      </div>`;
+    wrap.querySelector(".cmt-send").addEventListener("click",()=>addComment(id,wrap));
+    wrap.querySelector(".cmt-body").addEventListener("keydown",ev=>{if(ev.key==="Enter")addComment(id,wrap);});
+  }catch(err){wrap.innerHTML=`<div class="hint">couldn't load comments 😢</div>`;}
+}
+async function addComment(id,wrap){
+  const name=wrap.querySelector(".cmt-name").value.trim()||"Anonymous";
+  const body=wrap.querySelector(".cmt-body").value.trim();
+  if(!body){toast("write a comment first!",true);return;}
+  const btn=wrap.querySelector(".cmt-send"); btn.disabled=true;
+  try{
+    const{error}=await sb.from("comments").insert({entry_id:id,name,body});
+    if(error)throw error;
+    if(name!=="Anonymous")localStorage.setItem("tc_name",name);
+    await loadComments(id); toast("comment posted! 💬");
+  }catch(err){toast("couldn't post: "+(err.message||err),true);}
+  finally{btn.disabled=false;}
+}
+/* ============ SURPRISE ME ============ */
+function surpriseMe(){
+  if(!allEntries.length){toast("no memories yet — add one first!",true);return;}
+  $("search").value="";$("tagFilter").value="";$("authorFilter").value="";renderFeed();
+  const pick=allEntries[Math.floor(Math.random()*allEntries.length)];
+  const el=document.querySelector(`.entry[data-eid="${pick.id}"]`);
+  if(el){el.scrollIntoView({behavior:"smooth",block:"center"});el.classList.add("flash");setTimeout(()=>el.classList.remove("flash"),1600);}
+  toast("✨ surprise memory!");
+}
+/* ============ POLL BUILDER (form) ============ */
+function addPollOpt(val){
+  const box=$("pollOpts");
+  if(box.children.length>=6){toast("max 6 options",true);return;}
+  const row=document.createElement("div");
+  row.style.cssText="display:flex;gap:6px;margin-bottom:5px";
+  row.innerHTML=`<input class="pollopt-in" maxlength="60" placeholder="option ${box.children.length+1}" /><button type="button" class="pollopt-x" title="remove" style="flex:0 0 auto">✕</button>`;
+  if(val)row.querySelector("input").value=val;
+  row.querySelector(".pollopt-x").addEventListener("click",()=>row.remove());
+  box.appendChild(row);
+}
+function buildPollOpts(n){$("pollOpts").innerHTML="";for(let i=0;i<n;i++)addPollOpt();}
+function setFormPoll(p){
+  const on=!!(p&&p.q&&Array.isArray(p.opts)&&p.opts.length>=2);
+  $("pollOn").checked=on; $("pollBuild").style.display=on?"block":"none";
+  $("pollQ").value=on?p.q:"";
+  if(on){$("pollOpts").innerHTML="";p.opts.forEach(o=>addPollOpt(o));}
+  else buildPollOpts(2);
+}
+function getFormPoll(){
+  if(!$("pollOn").checked)return null;
+  const q=$("pollQ").value.trim();
+  const opts=[...document.querySelectorAll("#pollOpts .pollopt-in")].map(i=>i.value.trim()).filter(Boolean).slice(0,6);
+  if(!q||opts.length<2){toast("a poll needs a question and 2+ options (saved without poll)",true);return null;}
+  return {q,opts,votes:{}};
+}
+
 /* ============ WIRE UP ============ */
 function init(){
-  buildMoodPicker();buildMarquee("");buildAuthorSelect();
+  buildMoodPicker();buildMarquee("");buildAuthorSelect();buildPollOpts(2);
   const d=new Date();
   $("datePill").textContent="📅 "+d.toLocaleDateString(undefined,{weekday:"long",month:"long",day:"numeric",year:"numeric"});
   $("fDate").value=todayISO();
   applyOwnerUI();
 
   $("newBtn").addEventListener("click",()=>openForm(null));
+  $("surpriseBtn").addEventListener("click",surpriseMe);
+  $("pollOn").addEventListener("change",()=>{$("pollBuild").style.display=$("pollOn").checked?"block":"none";if($("pollOn").checked&&!$("pollOpts").children.length)buildPollOpts(2);});
+  $("pollAdd").addEventListener("click",()=>addPollOpt());
   $("formClose").addEventListener("click",closeForm);
   $("cancelBtn").addEventListener("click",closeForm);
   $("saveBtn").addEventListener("click",saveEntry);
